@@ -1,6 +1,5 @@
 package com.ticketing.entitiy;
 
-import com.ticketing.entitiy.common.UserPrincipal;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,15 +17,15 @@ public class BaseEntityListener extends AuditingEntityListener {
 
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        baseEntity.insertDateTime = LocalDateTime.now();
-        baseEntity.lastUpdateDateTime = LocalDateTime.now();
-        baseEntity.insertUserId = 1L;
-        baseEntity.lastUpdateUserId = 1L;
+        baseEntity.insertDateTime=LocalDateTime.now();
+        baseEntity.lastUpdateDateTime=LocalDateTime.now();
+        baseEntity.insertUserId=1L;
+        baseEntity.lastUpdateUserId=1L;
 
-        if (authentication != null && !authentication.getName().equals("anonymousUSer") ){
-            Object principal = authentication.getPrincipal();
-            baseEntity.insertUserId = ((UserPrincipal)principal).getId();
-            baseEntity.lastUpdateUserId = ((UserPrincipal)principal).getId();
+        if(authentication !=null && !authentication.getName().equals("anonymousUser")){
+            long id = Long.parseLong(authentication.getName());
+            baseEntity.insertUserId=id;
+            baseEntity.lastUpdateUserId=id;
         }
     }
 
@@ -34,16 +33,12 @@ public class BaseEntityListener extends AuditingEntityListener {
     private void onPreUpdate(BaseEntity baseEntity){
 
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        baseEntity.lastUpdateDateTime = LocalDateTime.now();
-        baseEntity.lastUpdateUserId = 1L;
-
-        if (authentication != null && !authentication.getName().equals("anonymousUSer") ){
-            Object principal = authentication.getPrincipal();
-            baseEntity.lastUpdateUserId = ((UserPrincipal)principal).getId();
+        baseEntity.lastUpdateDateTime=LocalDateTime.now();
+        baseEntity.lastUpdateUserId=1L;
+        if(authentication !=null && !authentication.getName().equals("anonymousUser")){
+            long id = Long.parseLong(authentication.getName());
+            baseEntity.lastUpdateUserId=id;
         }
-
-
 
     }
 }
