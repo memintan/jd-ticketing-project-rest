@@ -2,6 +2,7 @@ package com.ticketing.config;
 
 
 
+import com.ticketing.filter.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    @Autowired
-//    private SecurityFilter securityFilter;
+    @Autowired
+    private SecurityFilter securityFilter;
 
     @Override
     @Bean
@@ -51,6 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated();
 
-        //http.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
