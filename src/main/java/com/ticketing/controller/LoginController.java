@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Controller
 @RestController
+
 public class LoginController {
 
 	private AuthenticationManager authenticationManager;
@@ -26,14 +26,17 @@ public class LoginController {
 	private MapperUtil mapperUtil;
 	private JWTUtil jwtUtil;
 
+
 	public LoginController(AuthenticationManager authenticationManager, UserService userService, MapperUtil mapperUtil, JWTUtil jwtUtil) {
 		this.authenticationManager = authenticationManager;
 		this.userService = userService;
 		this.mapperUtil = mapperUtil;
 		this.jwtUtil = jwtUtil;
+
 	}
 
 	@PostMapping("/authenticate")
+
 	public ResponseEntity<ResponseWrapper> doLogin(@RequestBody AuthenticationRequest authenticationRequest) throws TicketingProjectException {
 
 		String password = authenticationRequest.getPassword();
@@ -43,18 +46,18 @@ public class LoginController {
 		authenticationManager.authenticate(authentication);
 
 		UserDTO foundUser = userService.findByUserName(username);
-		User convertedUser = mapperUtil.convert(foundUser, new User());
+		User convertedUser = mapperUtil.convert(foundUser,new User());
 
-		if (!foundUser.isEnabled()){
-			throw  new TicketingProjectException("Please verify your user");
+		if(!foundUser.isEnabled()){
+			throw new TicketingProjectException("Please verify your user");
 		}
 
 		String jwtToken = jwtUtil.generateToken(convertedUser);
 
-		return ResponseEntity.ok(new ResponseWrapper("LoginSuccessful!", jwtToken));
-
+		return ResponseEntity.ok(new ResponseWrapper("Login Successful",jwtToken));
 
 	}
+
 
 
 
