@@ -1,7 +1,7 @@
 package com.ticketing.implementation;
 
 import com.ticketing.dto.UserDTO;
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.User;
 import com.ticketing.util.MapperUtil;
 import com.ticketing.service.SecurityService;
 import com.ticketing.service.UserService;

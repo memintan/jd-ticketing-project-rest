@@ -1,8 +1,8 @@
 package com.ticketing.repository;
 
-import com.ticketing.entitiy.Project;
-import com.ticketing.entitiy.Task;
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.Project;
+import com.ticketing.entity.Task;
+import com.ticketing.entity.User;
 import com.ticketing.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

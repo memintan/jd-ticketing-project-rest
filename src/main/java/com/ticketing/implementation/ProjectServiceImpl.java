@@ -1,14 +1,15 @@
 package com.ticketing.implementation;
 
 import com.ticketing.dto.ProjectDTO;
-import com.ticketing.entitiy.Project;
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.Project;
+import com.ticketing.entity.User;
 import com.ticketing.enums.Status;
 import com.ticketing.exception.TicketingProjectException;
 import com.ticketing.util.MapperUtil;
 import com.ticketing.repository.ProjectRepository;
 import com.ticketing.repository.UserRepository;
 import com.ticketing.service.ProjectService;
+import com.ticketing.service.TaskService;
 import com.ticketing.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,14 +24,14 @@ public class ProjectServiceImpl implements ProjectService {
     private UserRepository userRepository;
     private ProjectRepository projectRepository;
     private UserService userService;
-    //private TaskService taskService;
+    private TaskService taskService;
     private MapperUtil mapperUtil;
 
-    public ProjectServiceImpl(UserRepository userRepository, ProjectRepository projectRepository, UserService userService,MapperUtil mapperUtil) {
+    public ProjectServiceImpl(UserRepository userRepository, ProjectRepository projectRepository, UserService userService, TaskService taskService, MapperUtil mapperUtil) {
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.userService = userService;
-
+        this.taskService = taskService;
         this.mapperUtil = mapperUtil;
     }
 
@@ -95,7 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
 
-        //taskService.deleteByProject(mapperUtil.convert(project,new ProjectDTO()));
+        taskService.deleteByProject(mapperUtil.convert(project,new ProjectDTO()));
     }
 
     @Override
@@ -129,8 +130,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         return list.stream().map(project -> {
             ProjectDTO obj = mapperUtil.convert(project,new ProjectDTO());
-//            obj.setUnfinishedTaskCounts(taskService.totalNonCompletedTasks(project.getProjectCode()));
-//            obj.setCompleteTaskCounts(taskService.totalCompletedTasks(project.getProjectCode()));
+            obj.setUnfinishedTaskCounts(taskService.totalNonCompletedTasks(project.getProjectCode()));
+            obj.setCompleteTaskCounts(taskService.totalCompletedTasks(project.getProjectCode()));
             return obj;
         }).collect(Collectors.toList());
 

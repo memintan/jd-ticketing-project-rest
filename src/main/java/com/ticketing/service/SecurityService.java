@@ -1,6 +1,6 @@
 package com.ticketing.service;
 
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

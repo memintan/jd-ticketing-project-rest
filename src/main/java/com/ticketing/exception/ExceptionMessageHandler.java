@@ -1,7 +1,7 @@
 package com.ticketing.exception;
 
 import com.ticketing.dto.DefaultExceptionMessageDto;
-import com.ticketing.entitiy.ResponseWrapper;
+import com.ticketing.entity.ResponseWrapper;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

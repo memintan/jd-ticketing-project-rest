@@ -1,6 +1,5 @@
 package com.ticketing.util;
 
-import com.ticketing.entitiy.Role;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +18,11 @@ public class MapperUtil {
         return modelMapper.map(objectToBeConverted,(Type) convertedObject.getClass());
     }
 
-        public <T> T  convertToEntity(Object objectToBeConverted, T convertedObject){
-        return modelMapper.map(objectToBeConverted, (Type) convertedObject.getClass());
-    }
-
-    public <T> T convertToDTO(Object objectToBeConverted, T convertedObject){
-        return modelMapper.map(objectToBeConverted,(Type) convertedObject.getClass());
-    }
-
-
-    public Object convertToDto(Role obj) {
-        return null;
-    }
+//        public <T> T  convertToEntity(Object objectToBeConverted, T convertedObject){
+//        return modelMapper.map(objectToBeConverted, (Type) convertedObject.getClass());
+//    }
+//
+//    public <T> T convertToDTO(Object objectToBeConverted, T convertedObject){
+//        return modelMapper.map(objectToBeConverted,(Type) convertedObject.getClass());
+//    }
 }

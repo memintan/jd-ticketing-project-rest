@@ -1,6 +1,7 @@
-package com.ticketing.entitiy;
+package com.ticketing.entity;
 
 import com.ticketing.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,10 +16,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Where(clause = "is_deleted=false")
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer"},ignoreUnknown = true)
 public class Project extends BaseEntity {
 
     @Column(unique = true)
     private String projectCode;
+
     private String projectName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,6 +34,7 @@ public class Project extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status projectStatus;
 
-    private String projectDetails;
+    private String projectDetail;
+
 
 }

@@ -1,4 +1,4 @@
-package com.ticketing.entitiy.common;
+package com.ticketing.entity.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

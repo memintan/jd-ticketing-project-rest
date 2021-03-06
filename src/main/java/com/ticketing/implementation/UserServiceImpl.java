@@ -3,7 +3,7 @@ package com.ticketing.implementation;
 import com.ticketing.dto.ProjectDTO;
 import com.ticketing.dto.TaskDTO;
 import com.ticketing.dto.UserDTO;
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.User;
 import com.ticketing.exception.TicketingProjectException;
 import com.ticketing.util.MapperUtil;
 import com.ticketing.repository.UserRepository;
@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.security.AccessControlException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private MapperUtil mapperUtil;
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, @Lazy ProjectService projectService,MapperUtil mapperUtil, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, @Lazy ProjectService projectService, TaskService taskService, MapperUtil mapperUtil, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.projectService = projectService;
         this.taskService = taskService;
@@ -85,9 +86,9 @@ public class UserServiceImpl implements UserService {
         User convertedUser = mapperUtil.convert(dto,new User());
         convertedUser.setPassWord(passwordEncoder.encode(convertedUser.getPassWord()));
 
-//        if(!user.getEnabled()){
-//            throw new TicketingProjectException("User is not confirmed");
-//        }
+        if(!user.getEnabled()){
+            throw new TicketingProjectException("User is not confirmed");
+        }
 
         checkForAuthorities(user);
 

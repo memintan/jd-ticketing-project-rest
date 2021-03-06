@@ -1,5 +1,7 @@
-package com.ticketing.entitiy;
+package com.ticketing.entity;
 
+import com.ticketing.dto.ProjectDTO;
+import com.ticketing.dto.UserDTO;
 import com.ticketing.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Where(clause = "is_deleted=false")
-public class Task extends BaseEntity{
+public class Task extends BaseEntity {
 
     private String taskSubject;
     private String taskDetail;

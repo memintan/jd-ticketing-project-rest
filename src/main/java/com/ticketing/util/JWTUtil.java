@@ -1,7 +1,7 @@
 package com.ticketing.util;
 
 
-import com.ticketing.entitiy.User;
+import com.ticketing.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

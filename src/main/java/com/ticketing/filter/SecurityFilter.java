@@ -1,7 +1,6 @@
 package com.ticketing.filter;
 
-import com.ticketing.entitiy.User;
-
+import com.ticketing.entity.User;
 import com.ticketing.service.SecurityService;
 import com.ticketing.util.JWTUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,10 +53,13 @@ public class SecurityFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+
+
+
     }
 
     private boolean checkIfUserIsValid(String username) throws AccessDeniedException {
         User currentUser = securityService.loadUser(username);
-        return currentUser != null && currentUser.isEnabled();
+        return currentUser != null && currentUser.getEnabled();
     }
 }

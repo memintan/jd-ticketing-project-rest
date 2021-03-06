@@ -1,7 +1,7 @@
 package com.ticketing.implementation;
 
 import com.ticketing.dto.RoleDTO;
-import com.ticketing.entitiy.Role;
+import com.ticketing.entity.Role;
 import com.ticketing.exception.TicketingProjectException;
 import com.ticketing.util.MapperUtil;
 import com.ticketing.repository.RoleRepository;

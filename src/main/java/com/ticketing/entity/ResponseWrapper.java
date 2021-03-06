@@ -1,4 +1,4 @@
-package com.ticketing.entitiy;
+package com.ticketing.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

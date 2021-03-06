@@ -1,4 +1,4 @@
-package com.ticketing.entitiy;
+package com.ticketing.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +18,8 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "roles")
-public class Role extends BaseEntity{
+public class Role extends BaseEntity {
+
         private String description;
 
 }
