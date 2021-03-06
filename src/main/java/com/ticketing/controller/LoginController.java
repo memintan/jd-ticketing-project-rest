@@ -1,5 +1,6 @@
 package com.ticketing.controller;
 
+import com.ticketing.annotation.DefaultExceptionMessage;
 import com.ticketing.dto.UserDTO;
 import com.ticketing.entitiy.ResponseWrapper;
 import com.ticketing.entitiy.User;
@@ -36,6 +37,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/authenticate")
+	@DefaultExceptionMessage(defaultMessage = "Bad Credentials")
 
 	public ResponseEntity<ResponseWrapper> doLogin(@RequestBody AuthenticationRequest authenticationRequest) throws TicketingProjectException {
 
