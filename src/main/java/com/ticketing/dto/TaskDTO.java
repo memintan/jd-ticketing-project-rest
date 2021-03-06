@@ -1,5 +1,6 @@
 package com.ticketing.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ticketing.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer"},ignoreUnknown = true)
 public class TaskDTO {
 
     private Long id;
@@ -20,6 +22,5 @@ public class TaskDTO {
     private String taskDetail;
     private Status taskStatus;
     private LocalDate assignedDate;
-
 
 }

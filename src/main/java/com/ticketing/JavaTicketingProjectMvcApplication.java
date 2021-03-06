@@ -23,4 +23,7 @@ public class JavaTicketingProjectMvcApplication {
         return new BCryptPasswordEncoder();
     }
 
+
+
+
 }

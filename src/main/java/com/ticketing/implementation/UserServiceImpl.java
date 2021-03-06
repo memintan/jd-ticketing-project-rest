@@ -5,17 +5,22 @@ import com.ticketing.dto.TaskDTO;
 import com.ticketing.dto.UserDTO;
 import com.ticketing.entitiy.User;
 import com.ticketing.exception.TicketingProjectException;
-import com.ticketing.mapper.MapperUtil;
+import com.ticketing.util.MapperUtil;
 import com.ticketing.repository.UserRepository;
 import com.ticketing.service.ProjectService;
 import com.ticketing.service.TaskService;
 import com.ticketing.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private MapperUtil mapperUtil;
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, @Lazy ProjectService projectService, TaskService taskService, MapperUtil mapperUtil, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, @Lazy ProjectService projectService,MapperUtil mapperUtil, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.projectService = projectService;
         this.taskService = taskService;
@@ -39,53 +44,73 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> listAllUsers() {
         List<User> list = userRepository.findAll(Sort.by("firstName"));
-
-        //return list.stream().map(obj -> {return mapperUtil.convert(obj, new UserDTO());}).collect(Collectors.toList());
-        return list.stream().map(obj -> {return mapperUtil.convert(obj, new UserDTO());}).collect(Collectors.toList());
+        return list.stream().map(obj -> mapperUtil.convert(obj,new UserDTO())).collect(Collectors.toList());
     }
 
     @Override
-    public UserDTO findByUserName(String username) {
+    public UserDTO findByUserName(String username) throws AccessDeniedException {
         User user = userRepository.findByUserName(username);
-        return mapperUtil.convert(user, new UserDTO());
+        checkForAuthorities(user);
+        return mapperUtil.convert(user,new UserDTO());
     }
 
     @Override
-    public void save(UserDTO dto) {
+    public UserDTO save(UserDTO dto) throws TicketingProjectException {
 
         User foundUser = userRepository.findByUserName(dto.getUserName());
-                dto.setEnabled(true);
 
-        User obj = mapperUtil.convert(dto, new User());
-        obj.setPassWord(passwordEncoder.encode(obj.getPassWord()));
-        userRepository.save(obj);
+        if(foundUser!=null){
+            throw new TicketingProjectException("User already exists");
+        }
+
+        User user =  mapperUtil.convert(dto,new User());
+        user.setPassWord(passwordEncoder.encode(user.getPassWord()));
+
+        User save = userRepository.save(user);
+
+        return mapperUtil.convert(save,new UserDTO());
+
     }
 
     @Override
-    public UserDTO update(UserDTO dto) {
-        //1->find current user
+    public UserDTO update(UserDTO dto) throws TicketingProjectException, AccessDeniedException {
+
+        //Find current user
         User user = userRepository.findByUserName(dto.getUserName());
-        //2->map update user dto to entity object
-        User convertUser = mapperUtil.convert(dto, new User());
 
-        convertUser.setPassWord(passwordEncoder.encode(convertUser.getPassWord()));
-        convertUser.setEnabled(true);
+        if(user == null){
+            throw new TicketingProjectException("User Does Not Exists");
+        }
+        //Map update user dto to entity object
+        User convertedUser = mapperUtil.convert(dto,new User());
+        convertedUser.setPassWord(passwordEncoder.encode(convertedUser.getPassWord()));
 
-        //3->set id to the converted object
-        convertUser.setId(user.getId());
-        //4-> save updated user
-        userRepository.save(convertUser);
+//        if(!user.getEnabled()){
+//            throw new TicketingProjectException("User is not confirmed");
+//        }
+
+        checkForAuthorities(user);
+
+        convertedUser.setEnabled(true);
+
+        //set id to the converted object
+        convertedUser.setId(user.getId());
+        //save updated user
+        userRepository.save(convertedUser);
+
         return findByUserName(dto.getUserName());
     }
 
     @Override
     public void delete(String username) throws TicketingProjectException {
         User user = userRepository.findByUserName(username);
-        if (user == null){
-            throw new TicketingProjectException("User Does not Exists");
+
+        if(user == null){
+            throw new TicketingProjectException("User Does Not Exists");
         }
-        if (!checkIfUserCanBeDeleted(user)){
-            throw new TicketingProjectException("User can not be deleted. It is linked by a project or task");
+
+        if(!checkIfUserCanBeDeleted(user)){
+            throw new TicketingProjectException("User can not be deleted. It is linked by a project ot task");
         }
 
         user.setUserName(user.getUserName() + "-" + user.getId());
@@ -100,26 +125,48 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteByUserName(username);
     }
 
+
     @Override
     public List<UserDTO> listAllByRole(String role) {
-
         List<User> users = userRepository.findAllByRoleDescriptionIgnoreCase(role);
-
-        return users.stream().map(obj -> {return mapperUtil.convert(obj, new UserDTO());}).collect(Collectors.toList());
+        return users.stream().map(obj -> {return mapperUtil.convert(obj,new UserDTO());}).collect(Collectors.toList());
     }
 
     @Override
     public Boolean checkIfUserCanBeDeleted(User user) {
-        switch (user.getRole().getDescription()){
-            case"Manager":
+
+        switch(user.getRole().getDescription()){
+            case "Manager":
                 List<ProjectDTO> projectList = projectService.readAllByAssignedManager(user);
                 return projectList.size() == 0;
             case "Employee":
                 List<TaskDTO> taskList = taskService.readAllByEmployee(user);
-                return  taskList.size() == 0;
+                return taskList.size() == 0;
             default:
                 return true;
         }
+    }
 
+    @Override
+    public UserDTO confirm(User user) {
+
+        user.setEnabled(true);
+        User confirmedUser = userRepository.save(user);
+
+        return mapperUtil.convert(confirmedUser,new UserDTO());
+    }
+
+    private void checkForAuthorities(User user) throws AccessDeniedException {
+
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication!=null && !authentication.getName().equals("anonymousUser")){
+
+            Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+
+            if(!(authentication.getName().equals(user.getId().toString()) || roles.contains("Admin"))){
+                throw new AccessDeniedException("Access is denied");
+            }
+        }
     }
 }

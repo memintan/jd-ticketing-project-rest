@@ -5,6 +5,7 @@ import com.ticketing.dto.TaskDTO;
 import com.ticketing.entitiy.Task;
 import com.ticketing.entitiy.User;
 import com.ticketing.enums.Status;
+import com.ticketing.exception.TicketingProjectException;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface TaskService {
     List<TaskDTO> listAllTasks();
     Task save(TaskDTO dto);
     void update(TaskDTO dto);
-    void delete(long id);
+    void delete(long id) throws TicketingProjectException;
 
     int totalNonCompletedTasks(String projectCode);
     int totalCompletedTasks(String projectCode);
