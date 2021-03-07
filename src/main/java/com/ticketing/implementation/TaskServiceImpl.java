@@ -49,8 +49,8 @@ public class TaskServiceImpl implements TaskService {
         dto.setTaskStatus(Status.OPEN);
         dto.setAssignedDate(LocalDate.now());
         Task task = mapperUtil.convert(dto,new Task());
-        Task save = taskRepository.save(task);
-        return mapperUtil.convert(save,new TaskDTO());
+        Task saved = taskRepository.save(task);
+        return mapperUtil.convert(saved,new TaskDTO());
     }
 
     @Override
